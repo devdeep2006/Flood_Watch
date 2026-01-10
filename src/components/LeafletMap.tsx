@@ -66,38 +66,32 @@ const getCircleRadius = (risk: WardData['risk']) => {
   }
 };
 
-// Custom control component for zoom buttons
+// Custom control component for zoom buttons - must be inside MapContainer
 const MapControls = ({ onReset }: { onReset: () => void }) => {
   const map = useMap();
 
-  return (
-    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-background/90 backdrop-blur"
-        onClick={() => map.zoomIn()}
-      >
-        <ZoomIn className="w-4 h-4" />
-      </Button>
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-background/90 backdrop-blur"
-        onClick={() => map.zoomOut()}
-      >
-        <ZoomOut className="w-4 h-4" />
-      </Button>
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="bg-background/90 backdrop-blur"
-        onClick={onReset}
-      >
-        <Navigation className="w-4 h-4" />
-      </Button>
-    </div>
-  );
+  const handleZoomIn = () => map.zoomIn();
+  const handleZoomOut = () => map.zoomOut();
+  const handleResetView = () => onReset();
+
+  useEffect(() => {
+    // Controls are rendered outside MapContainer, so we just return null here
+  }, []);
+
+  return null;
+};
+
+// Separate component for map event handling
+const MapEventHandler = ({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (mapRef.current === null) {
+      (mapRef as React.MutableRefObject<L.Map | null>).current = map;
+    }
+  }, [map, mapRef]);
+
+  return null;
 };
 
 interface LeafletMapProps {
@@ -137,18 +131,18 @@ const LeafletMap = ({ onWardSelect, selectedWardId, showDrainNetwork = false, he
   return (
     <div className="relative rounded-xl overflow-hidden border border-border/50" style={{ height }}>
       <MapContainer
-        ref={mapRef}
         center={delhiCenter}
         zoom={defaultZoom}
         className="w-full h-full"
         zoomControl={false}
       >
+        <MapEventHandler mapRef={mapRef} />
+        
         {/* Tile Layer */}
         {mapLayer === 'streets' ? (
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            className="dark:brightness-75 dark:invert dark:hue-rotate-180"
           />
         ) : (
           <TileLayer
@@ -229,9 +223,35 @@ const LeafletMap = ({ onWardSelect, selectedWardId, showDrainNetwork = false, he
             </Popup>
           </Circle>
         ))}
-
-        <MapControls onReset={handleReset} />
       </MapContainer>
+      
+      {/* Map Controls - Outside MapContainer */}
+      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="bg-background/90 backdrop-blur"
+          onClick={() => mapRef.current?.zoomIn()}
+        >
+          <ZoomIn className="w-4 h-4" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="bg-background/90 backdrop-blur"
+          onClick={() => mapRef.current?.zoomOut()}
+        >
+          <ZoomOut className="w-4 h-4" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="bg-background/90 backdrop-blur"
+          onClick={handleReset}
+        >
+          <Navigation className="w-4 h-4" />
+        </Button>
+      </div>
 
       {/* Layer Toggle */}
       <div className="absolute bottom-4 left-4 z-[1000]">
