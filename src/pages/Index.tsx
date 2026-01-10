@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/Layout';
 import StatusOverview from '@/components/StatusOverview';
-import LeafletMap from '@/components/LeafletMap';
+import DelhiMap from '@/components/DelhiMap';
 import PredictionPanel from '@/components/PredictionPanel';
 import AlertSystem from '@/components/AlertSystem';
-import LiveWeatherWidget from '@/components/LiveWeatherWidget';
+import RainfallMonitor from '@/components/RainfallMonitor';
 import HighRiskZones from '@/components/HighRiskZones';
 import DrainageMetrics from '@/components/DrainageMetrics';
 
@@ -23,13 +23,9 @@ const Index = () => {
 
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Interactive Leaflet Map - Takes 2 columns */}
-          <div className="lg:col-span-2 glass-card p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-foreground">Delhi Ward Risk Map</h2>
-              <p className="text-sm text-muted-foreground">Interactive GIS visualization with real-time flood risk</p>
-            </div>
-            <LeafletMap height="450px" showDrainNetwork />
+          {/* Map - Takes 2 columns */}
+          <div className="lg:col-span-2">
+            <DelhiMap />
           </div>
 
           {/* Prediction Panel */}
@@ -43,8 +39,8 @@ const Index = () => {
           {/* Alert System */}
           <AlertSystem />
 
-          {/* Live Weather Widget */}
-          <LiveWeatherWidget />
+          {/* Rainfall Monitor */}
+          <RainfallMonitor />
         </div>
 
         {/* Priority Response & Drainage */}
@@ -60,7 +56,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="glass-card p-4 text-center">
           <p className="text-sm text-muted-foreground">
-            Delhi FloodWatch © 2024 | Data sources: OpenWeatherMap, Delhi Jal Board, MCD | 
+            Delhi FloodWatch © 2024 | Data sources: IMD, Delhi Jal Board, MCD | 
             <span className="text-primary ml-2">System refresh: Every 5 minutes</span>
           </p>
         </footer>
