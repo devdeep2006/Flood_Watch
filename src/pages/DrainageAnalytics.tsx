@@ -35,15 +35,21 @@ interface WardDrainage {
 }
 
 const drainageData: WardDrainage[] = [
-  { id: '1', name: 'Chandni Chowk', zone: 'Central', healthScore: 28, designedCapacity: 1200, actualLoad: 1800, drainDensity: 2.1, majorOutlets: 4, connectedOutlets: 2, historicalPerformance: 'critical', trend: 'declining', bottlenecks: 8, maintenanceNeeded: true },
-  { id: '2', name: 'Nehru Place', zone: 'South', healthScore: 35, designedCapacity: 1500, actualLoad: 1950, drainDensity: 2.8, majorOutlets: 5, connectedOutlets: 3, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 6, maintenanceNeeded: true },
-  { id: '3', name: 'Karol Bagh', zone: 'Central', healthScore: 42, designedCapacity: 1400, actualLoad: 1680, drainDensity: 3.2, majorOutlets: 6, connectedOutlets: 4, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 5, maintenanceNeeded: true },
-  { id: '4', name: 'ITO', zone: 'Central', healthScore: 48, designedCapacity: 1100, actualLoad: 1210, drainDensity: 3.5, majorOutlets: 4, connectedOutlets: 3, historicalPerformance: 'average', trend: 'improving', bottlenecks: 4, maintenanceNeeded: false },
-  { id: '5', name: 'Rajouri Garden', zone: 'West', healthScore: 52, designedCapacity: 1600, actualLoad: 1520, drainDensity: 3.8, majorOutlets: 7, connectedOutlets: 5, historicalPerformance: 'average', trend: 'stable', bottlenecks: 3, maintenanceNeeded: false },
-  { id: '6', name: 'Lajpat Nagar', zone: 'South', healthScore: 58, designedCapacity: 1300, actualLoad: 1105, drainDensity: 4.1, majorOutlets: 5, connectedOutlets: 4, historicalPerformance: 'good', trend: 'improving', bottlenecks: 2, maintenanceNeeded: false },
-  { id: '7', name: 'Dwarka', zone: 'South-West', healthScore: 78, designedCapacity: 2000, actualLoad: 1200, drainDensity: 5.2, majorOutlets: 10, connectedOutlets: 9, historicalPerformance: 'excellent', trend: 'stable', bottlenecks: 1, maintenanceNeeded: false },
-  { id: '8', name: 'Rohini', zone: 'North', healthScore: 72, designedCapacity: 1800, actualLoad: 1260, drainDensity: 4.8, majorOutlets: 8, connectedOutlets: 7, historicalPerformance: 'good', trend: 'stable', bottlenecks: 2, maintenanceNeeded: false },
+  { id: '87', name: 'Ranjeet Nagar', zone: 'Karol Bagh (Central)', healthScore: 32, designedCapacity: 850, actualLoad: 1250, drainDensity: 2.4, majorOutlets: 3, connectedOutlets: 1, historicalPerformance: 'critical', trend: 'declining', bottlenecks: 7, maintenanceNeeded: true },
+  { id: '88', name: 'Karol Bagh', zone: 'Karol Bagh (Central)', healthScore: 38, designedCapacity: 1100, actualLoad: 1450, drainDensity: 2.7, majorOutlets: 4, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 6, maintenanceNeeded: true },
+  { id: '89', name: 'New Rajinder Nagar', zone: 'Karol Bagh (Central)', healthScore: 41, designedCapacity: 950, actualLoad: 1180, drainDensity: 2.9, majorOutlets: 3, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 5, maintenanceNeeded: true },
+  { id: '202', name: 'Nehru Place', zone: 'Siri Fort (South)', healthScore: 45, designedCapacity: 1400, actualLoad: 1620, drainDensity: 3.1, majorOutlets: 5, connectedOutlets: 3, historicalPerformance: 'poor', trend: 'improving', bottlenecks: 4, maintenanceNeeded: true },
+  { id: '203', name: 'Lajpat Nagar', zone: 'Siri Fort (South)', healthScore: 52, designedCapacity: 1200, actualLoad: 1280, drainDensity: 3.4, majorOutlets: 4, connectedOutlets: 3, historicalPerformance: 'average', trend: 'stable', bottlenecks: 3, maintenanceNeeded: false },
+  { id: '147', name: 'Rajouri Garden', zone: 'Rajouri Garden (West)', healthScore: 55, designedCapacity: 1600, actualLoad: 1480, drainDensity: 3.6, majorOutlets: 6, connectedOutlets: 4, historicalPerformance: 'average', trend: 'stable', bottlenecks: 3, maintenanceNeeded: false },
+  { id: '148', name: 'Punjabi Bagh', zone: 'Rajouri Garden (West)', healthScore: 48, designedCapacity: 1300, actualLoad: 1420, drainDensity: 3.2, majorOutlets: 5, connectedOutlets: 3, historicalPerformance: 'average', trend: 'declining', bottlenecks: 4, maintenanceNeeded: true },
+  { id: 'B-1', name: 'Rohini Sector 1-5', zone: 'Rohini (North-West)', healthScore: 72, designedCapacity: 1800, actualLoad: 1320, drainDensity: 4.7, majorOutlets: 8, connectedOutlets: 7, historicalPerformance: 'good', trend: 'stable', bottlenecks: 2, maintenanceNeeded: false },
+  { id: 'B-2', name: 'Rohini Sector 6-16', zone: 'Rohini (North-West)', healthScore: 68, designedCapacity: 1650, actualLoad: 1410, drainDensity: 4.5, majorOutlets: 7, connectedOutlets: 6, historicalPerformance: 'good', trend: 'improving', bottlenecks: 3, maintenanceNeeded: false },
+  { id: 'C-1', name: 'Dwarka Sector 1-10', zone: 'Dwarka (South-West)', healthScore: 82, designedCapacity: 2200, actualLoad: 1180, drainDensity: 5.4, majorOutlets: 11, connectedOutlets: 10, historicalPerformance: 'excellent', trend: 'stable', bottlenecks: 1, maintenanceNeeded: false },
+  { id: 'C-2', name: 'Dwarka Sector 11-23', zone: 'Dwarka (South-West)', healthScore: 75, designedCapacity: 1950, actualLoad: 1270, drainDensity: 5.1, majorOutlets: 9, connectedOutlets: 8, historicalPerformance: 'excellent', trend: 'stable', bottlenecks: 2, maintenanceNeeded: false },
+  { id: '267', name: 'Seelampur', zone: 'Shahdara (East)', healthScore: 29, designedCapacity: 900, actualLoad: 1580, drainDensity: 2.2, majorOutlets: 4, connectedOutlets: 1, historicalPerformance: 'critical', trend: 'declining', bottlenecks: 9, maintenanceNeeded: true },
+  { id: '268', name: 'Welcome Colony', zone: 'Shahdara (East)', healthScore: 34, designedCapacity: 1050, actualLoad: 1520, drainDensity: 2.5, majorOutlets: 5, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 7, maintenanceNeeded: true },
 ];
+
 
 const getHealthColor = (score: number) => {
   if (score >= 70) return 'bg-success';
