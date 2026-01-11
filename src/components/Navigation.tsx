@@ -26,7 +26,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Crowdsourced Map', href: '/crowdsourced-map', icon: Map, badge: '12 new', badgeVariant: 'warning' },
   { label: 'Ward Risk Dashboard', href: '/ward-dashboard', icon: PieChart },
   { label: 'Data Aggregation', href: '/data-aggregation', icon: Database, badge: 'Live', badgeVariant: 'default' },
@@ -93,21 +93,9 @@ const Navigation = () => {
 
         {/* Footer */}
         <div className="p-4 border-t border-border/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-warning rounded-full" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-5 h-5" />
-              </Button>
-            </div>
-            <Badge variant="success" className="gap-1">
-              <span className="w-1.5 h-1.5 bg-success rounded-full animate-pulse" />
-              Online
-            </Badge>
-          </div>
+          <p className="text-center text-xs text-muted-foreground tracking-wide">
+            Created by <span className="font-semibold text-foreground">DELHI_FLOODWATCH</span>
+          </p>
         </div>
       </aside>
 

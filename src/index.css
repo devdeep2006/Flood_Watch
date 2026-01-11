@@ -1,9 +1,26 @@
+/* ===================== ROOT HEIGHT FIX (MANDATORY) ===================== */
+html, body, #root {
+  height: 100%;
+}
+
+/* ===================== GOOGLE FONTS ===================== */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+/* ===================== TAILWIND ===================== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
-
+h1, h2, h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+/* ===================== BASE VARIABLES ===================== */
 @layer base {
   :root {
     --background: 222 47% 6%;
@@ -12,10 +29,7 @@
     --card: 222 47% 8%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 199 89% 48%;
+    --primary: 190 100% 50%;
     --primary-foreground: 222 47% 6%;
 
     --secondary: 217 33% 17%;
@@ -24,191 +38,112 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 55%;
 
-    --accent: 217 33% 22%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 200 100% 55%;
+    --accent-foreground: 222 47% 6%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 6%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 222 47% 6%;
-
-    --critical: 0 84% 60%;
-    --critical-foreground: 210 40% 98%;
-
-    --safe: 142 71% 45%;
-    --safe-foreground: 222 47% 6%;
-
-    --moderate: 38 92% 50%;
-    --moderate-foreground: 222 47% 6%;
-
-    --high-risk: 0 84% 60%;
-    --high-risk-foreground: 210 40% 98%;
-
     --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 199 89% 48%;
+    --ring: 190 100% 50%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 199 89% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 199 89% 48%;
-
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(199 89% 48%) 0%, hsl(217 91% 60%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(25 95% 53%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(350 89% 60%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(160 84% 39%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsla(217 33% 17% / 0.6) 0%, hsla(217 33% 17% / 0.3) 100%);
-
-    /* Shadows */
-    --shadow-glow-primary: 0 0 40px hsla(199 89% 48% / 0.3);
-    --shadow-glow-warning: 0 0 30px hsla(38 92% 50% / 0.4);
-    --shadow-glow-danger: 0 0 30px hsla(0 84% 60% / 0.4);
-    --shadow-card: 0 4px 24px hsla(0 0% 0% / 0.4);
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
+    /* Lovable gradients */
+    --gradient-text: linear-gradient(135deg, hsl(180 100% 60%), hsl(220 100% 70%));
+    --gradient-mesh:
+      radial-gradient(at 40% 20%, hsl(190 100% 50% / 0.12), transparent 50%),
+      radial-gradient(at 80% 0%, hsl(220 100% 60% / 0.1), transparent 50%),
+      radial-gradient(at 0% 50%, hsl(200 100% 55% / 0.08), transparent 50%);
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
 
-  .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }
 
+/* ===================== COMPONENTS ===================== */
 @layer components {
+
+  /* Glass cards */
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
-    box-shadow: var(--shadow-card);
+    background: hsl(222 47% 8% / 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(217 33% 17%);
+    border-radius: 1rem;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300;
+    transition: all 0.3s ease;
   }
 
   .glass-card-hover:hover {
-    @apply border-primary/30;
-    box-shadow: var(--shadow-glow-primary);
+    border-color: hsl(190 100% 50% / 0.4);
+    transform: translateY(-4px);
   }
 
-  .status-pulse {
-    @apply relative;
-  }
-
-  .status-pulse::before {
-    content: '';
-    @apply absolute inset-0 rounded-full animate-ping opacity-75;
-  }
-
-  .gradient-text-primary {
-    background: var(--gradient-primary);
+  /* Lovable hero styles */
+  .text-gradient {
+    background: var(--gradient-text);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
-  .gradient-border {
-    @apply relative;
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      hsl(222 47% 6% / 0.6),
+      hsl(222 47% 6% / 0.95)
+    );
   }
 
-  .gradient-border::before {
-    content: '';
-    @apply absolute inset-0 rounded-xl p-px;
-    background: var(--gradient-primary);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+  .mesh-gradient {
+    background: var(--gradient-mesh);
   }
 
-  .risk-low {
-    @apply bg-success/20 text-success border-success/30;
+  /* Floating orbs */
+  .floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 20s ease-in-out infinite;
   }
 
-  .risk-moderate {
-    @apply bg-warning/20 text-warning border-warning/30;
+  .floating-orb-1 {
+    width: 600px;
+    height: 600px;
+    background: hsl(190 100% 50% / 0.15);
+    top: -200px;
+    right: -100px;
   }
 
-  .risk-high {
-    @apply bg-destructive/20 text-destructive border-destructive/30;
+  .floating-orb-2 {
+    width: 400px;
+    height: 400px;
+    background: hsl(220 100% 60% / 0.12);
+    bottom: 100px;
+    left: -100px;
   }
 
-  .risk-critical {
-    @apply bg-destructive/30 text-destructive border-destructive/50;
-    animation: pulse-danger 2s infinite;
-  }
-
-  @keyframes pulse-danger {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
-
-  .map-grid {
-    background-image: 
-      linear-gradient(hsla(199 89% 48% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsla(199 89% 48% / 0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  .animate-pulse-slow {
-    animation: pulse 3s ease-in-out infinite;
+  .floating-orb-3 {
+    width: 300px;
+    height: 300px;
+    background: hsl(200 100% 55% / 0.1);
+    top: 40%;
+    right: 20%;
   }
 }
 
+/* ===================== UTILITIES ===================== */
 @layer utilities {
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary)) transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.3);
-    border-radius: 3px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.5);
+  @keyframes float {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    25% { transform: translate(30px,-30px) scale(1.05); }
+    50% { transform: translate(-20px,20px) scale(0.95); }
+    75% { transform: translate(-30px,-20px) scale(1.02); }
   }
 }

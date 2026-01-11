@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { lazy, Suspense } from "react";
+
 import Index from "./pages/Index";
 import CrowdsourcedMap from "./pages/CrowdsourcedMap";
 import WardDashboard from "./pages/WardDashboard";
@@ -11,6 +13,9 @@ import DataAggregation from "./pages/DataAggregation";
 import DrainageAnalytics from "./pages/DrainageAnalytics";
 import PreparednessScorecard from "./pages/PreparednessScorecard";
 import NotFound from "./pages/NotFound";
+
+// 🔥 LAZY IMPORT FOR LANDING PAGE (CRITICAL FIX)
+const HeroSection = lazy(() => import("./pages/landing"));
 
 const queryClient = new QueryClient();
 
@@ -21,16 +26,23 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/crowdsourced-map" element={<CrowdsourcedMap />} />
-            <Route path="/ward-dashboard" element={<WardDashboard />} />
-            <Route path="/data-aggregation" element={<DataAggregation />} />
-            <Route path="/drainage-analytics" element={<DrainageAnalytics />} />
-            <Route path="/preparedness" element={<PreparednessScorecard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <Routes>
+              {/* Landing page */}
+              <Route path="/" element={<HeroSection />} />
+
+              {/* Dashboard & others */}
+              <Route path="/dashboard" element={<Index />} />
+              <Route path="/crowdsourced-map" element={<CrowdsourcedMap />} />
+              <Route path="/ward-dashboard" element={<WardDashboard />} />
+              <Route path="/data-aggregation" element={<DataAggregation />} />
+              <Route path="/drainage-analytics" element={<DrainageAnalytics />} />
+              <Route path="/preparedness" element={<PreparednessScorecard />} />
+
+              {/* Catch-all */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

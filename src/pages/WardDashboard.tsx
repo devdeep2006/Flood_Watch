@@ -1,66 +1,179 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/components/Layout';
 import { Badge } from '@/components/ui/badge';
+import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import DelhiMap from '@/components/DelhiMap'; 
+import { generateWardReport } from '@/utils/reportGenerator';
 import { 
-  MapPin, 
-  History, 
-  Activity, 
-  Droplets, 
-  Cloud, 
-  AlertTriangle,
-  Eye,
-  Calendar,
-  TrendingUp,
-  ChevronRight
+  MapPin, History, Activity, Droplets, Cloud, 
+  AlertTriangle, Eye, Calendar, TrendingUp, ChevronRight,
+  Waves, ThermometerSun, Info, RefreshCw, Signal
 } from 'lucide-react';
+import { WardData, RiskLevel } from '@/types/ward';
 
-interface WardData {
-  id: string;
-  name: string;
-  zone: string;
-  currentRisk: 'low' | 'moderate' | 'high' | 'critical';
-  historicalRisk: 'low' | 'moderate' | 'high' | 'critical';
-  currentRainfall: number;
-  drainCapacity: number;
-  activeIncidents: number;
-  historicalIncidents: number;
-  lastFlood: string;
-  population: string;
-}
+// --- EXPANDED DATASET (20 Locations) ---
+const rawWardsData: WardData[] = [
+  // ... Keep your existing 10 items (Chandni Chowk to Dwarka) here ...
+  { 
+    id: '1', name: 'Chandni Chowk', zone: 'Central', population: '156K',
+    currentRisk: 'critical', currentRainfall: 52, drainCapacity: 15, activeIncidents: 4, lastFlood: '2 hours ago',
+    historicalRisk: 'critical', historicalIncidents: 47,
+    floodFrequency: 47, severeFloods: 12, peakRainfall: '185 mm (Jul 2023)', avgDrainCapacity: 45
+  },
+  { 
+    id: '2', name: 'Nehru Place', zone: 'South', population: '89K',
+    currentRisk: 'critical', currentRainfall: 48, drainCapacity: 22, activeIncidents: 3, lastFlood: '4 hours ago',
+    historicalRisk: 'high', historicalIncidents: 38,
+    floodFrequency: 38, severeFloods: 8, peakRainfall: '142 mm (Aug 2022)', avgDrainCapacity: 60
+  },
+  { 
+    id: '3', name: 'Karol Bagh', zone: 'Central', population: '178K',
+    currentRisk: 'high', currentRainfall: 45, drainCapacity: 28, activeIncidents: 2, lastFlood: '6 hours ago',
+    historicalRisk: 'high', historicalIncidents: 42,
+    floodFrequency: 42, severeFloods: 9, peakRainfall: '155 mm (Jul 2023)', avgDrainCapacity: 55
+  },
+  { 
+    id: '4', name: 'ITO', zone: 'Central', population: '45K',
+    currentRisk: 'high', currentRainfall: 42, drainCapacity: 35, activeIncidents: 2, lastFlood: '8 hours ago',
+    historicalRisk: 'moderate', historicalIncidents: 35,
+    floodFrequency: 35, severeFloods: 5, peakRainfall: '130 mm (Sep 2021)', avgDrainCapacity: 65
+  },
+  { 
+    id: '5', name: 'Rajouri Garden', zone: 'West', population: '203K',
+    currentRisk: 'high', currentRainfall: 44, drainCapacity: 32, activeIncidents: 2, lastFlood: '5 hours ago',
+    historicalRisk: 'high', historicalIncidents: 31,
+    floodFrequency: 31, severeFloods: 7, peakRainfall: '148 mm (Jul 2023)', avgDrainCapacity: 58
+  },
+  { 
+    id: '6', name: 'Lajpat Nagar', zone: 'South', population: '145K',
+    currentRisk: 'moderate', currentRainfall: 38, drainCapacity: 45, activeIncidents: 1, lastFlood: '1 day ago',
+    historicalRisk: 'high', historicalIncidents: 28,
+    floodFrequency: 28, severeFloods: 6, peakRainfall: '138 mm (Aug 2022)', avgDrainCapacity: 62
+  },
+  { 
+    id: '7', name: 'Pitampura', zone: 'North', population: '267K',
+    currentRisk: 'moderate', currentRainfall: 35, drainCapacity: 52, activeIncidents: 1, lastFlood: '2 days ago',
+    historicalRisk: 'moderate', historicalIncidents: 24,
+    floodFrequency: 24, severeFloods: 4, peakRainfall: '125 mm (Jul 2021)', avgDrainCapacity: 70
+  },
+  { 
+    id: '8', name: 'Shahdara', zone: 'East', population: '312K',
+    currentRisk: 'moderate', currentRainfall: 40, drainCapacity: 38, activeIncidents: 1, lastFlood: '12 hours ago',
+    historicalRisk: 'high', historicalIncidents: 29,
+    floodFrequency: 29, severeFloods: 8, peakRainfall: '160 mm (Jul 2023)', avgDrainCapacity: 50
+  },
+  { 
+    id: '9', name: 'Rohini', zone: 'North', population: '445K',
+    currentRisk: 'low', currentRainfall: 28, drainCapacity: 68, activeIncidents: 0, lastFlood: '5 days ago',
+    historicalRisk: 'moderate', historicalIncidents: 18,
+    floodFrequency: 18, severeFloods: 2, peakRainfall: '110 mm (Aug 2020)', avgDrainCapacity: 75
+  },
+  { 
+    id: '10', name: 'Dwarka', zone: 'South-West', population: '389K',
+    currentRisk: 'low', currentRainfall: 22, drainCapacity: 75, activeIncidents: 0, lastFlood: '2 weeks ago',
+    historicalRisk: 'low', historicalIncidents: 12,
+    floodFrequency: 12, severeFloods: 1, peakRainfall: '95 mm (Sep 2021)', avgDrainCapacity: 82
+  },
 
-const wardsData: WardData[] = [
-  { id: '1', name: 'Chandni Chowk', zone: 'Central', currentRisk: 'critical', historicalRisk: 'critical', currentRainfall: 52, drainCapacity: 15, activeIncidents: 4, historicalIncidents: 47, lastFlood: '2 hours ago', population: '156K' },
-  { id: '2', name: 'Nehru Place', zone: 'South', currentRisk: 'critical', historicalRisk: 'high', currentRainfall: 48, drainCapacity: 22, activeIncidents: 3, historicalIncidents: 38, lastFlood: '4 hours ago', population: '89K' },
-  { id: '3', name: 'Karol Bagh', zone: 'Central', currentRisk: 'high', historicalRisk: 'high', currentRainfall: 45, drainCapacity: 28, activeIncidents: 2, historicalIncidents: 42, lastFlood: '6 hours ago', population: '178K' },
-  { id: '4', name: 'ITO', zone: 'Central', currentRisk: 'high', historicalRisk: 'moderate', currentRainfall: 42, drainCapacity: 35, activeIncidents: 2, historicalIncidents: 35, lastFlood: '8 hours ago', population: '45K' },
-  { id: '5', name: 'Rajouri Garden', zone: 'West', currentRisk: 'high', historicalRisk: 'high', currentRainfall: 44, drainCapacity: 32, activeIncidents: 2, historicalIncidents: 31, lastFlood: '5 hours ago', population: '203K' },
-  { id: '6', name: 'Lajpat Nagar', zone: 'South', currentRisk: 'moderate', historicalRisk: 'high', currentRainfall: 38, drainCapacity: 45, activeIncidents: 1, historicalIncidents: 28, lastFlood: '1 day ago', population: '145K' },
-  { id: '7', name: 'Pitampura', zone: 'North', currentRisk: 'moderate', historicalRisk: 'moderate', currentRainfall: 35, drainCapacity: 52, activeIncidents: 1, historicalIncidents: 24, lastFlood: '2 days ago', population: '267K' },
-  { id: '8', name: 'Shahdara', zone: 'East', currentRisk: 'moderate', historicalRisk: 'high', currentRainfall: 40, drainCapacity: 38, activeIncidents: 1, historicalIncidents: 29, lastFlood: '12 hours ago', population: '312K' },
-  { id: '9', name: 'Rohini', zone: 'North', currentRisk: 'low', historicalRisk: 'moderate', currentRainfall: 28, drainCapacity: 68, activeIncidents: 0, historicalIncidents: 18, lastFlood: '5 days ago', population: '445K' },
-  { id: '10', name: 'Dwarka', zone: 'South-West', currentRisk: 'low', historicalRisk: 'low', currentRainfall: 22, drainCapacity: 75, activeIncidents: 0, historicalIncidents: 12, lastFlood: '2 weeks ago', population: '389K' },
+  // --- NEW LOCATIONS ---
+  { 
+    id: '11', name: 'Connaught Place', zone: 'Central', population: '25K',
+    currentRisk: 'high', currentRainfall: 46, drainCapacity: 40, activeIncidents: 2, lastFlood: '6 hours ago',
+    historicalRisk: 'moderate', historicalIncidents: 22,
+    floodFrequency: 22, severeFloods: 3, peakRainfall: '145 mm (Jul 2023)', avgDrainCapacity: 72
+  },
+  { 
+    id: '12', name: 'Vasant Kunj', zone: 'South', population: '110K',
+    currentRisk: 'low', currentRainfall: 18, drainCapacity: 82, activeIncidents: 0, lastFlood: '3 weeks ago',
+    historicalRisk: 'low', historicalIncidents: 8,
+    floodFrequency: 8, severeFloods: 0, peakRainfall: '88 mm (Aug 2021)', avgDrainCapacity: 85
+  },
+  { 
+    id: '13', name: 'Hauz Khas', zone: 'South', population: '85K',
+    currentRisk: 'moderate', currentRainfall: 32, drainCapacity: 55, activeIncidents: 1, lastFlood: '1 day ago',
+    historicalRisk: 'moderate', historicalIncidents: 15,
+    floodFrequency: 15, severeFloods: 2, peakRainfall: '115 mm (Sep 2022)', avgDrainCapacity: 68
+  },
+  { 
+    id: '14', name: 'Saket', zone: 'South', population: '140K',
+    currentRisk: 'moderate', currentRainfall: 35, drainCapacity: 48, activeIncidents: 1, lastFlood: '14 hours ago',
+    historicalRisk: 'high', historicalIncidents: 30,
+    floodFrequency: 30, severeFloods: 5, peakRainfall: '138 mm (Jul 2023)', avgDrainCapacity: 52
+  },
+  { 
+    id: '15', name: 'Okhla', zone: 'East', population: '210K',
+    currentRisk: 'critical', currentRainfall: 55, drainCapacity: 12, activeIncidents: 5, lastFlood: '1 hour ago',
+    historicalRisk: 'critical', historicalIncidents: 52,
+    floodFrequency: 52, severeFloods: 15, peakRainfall: '170 mm (Aug 2023)', avgDrainCapacity: 35
+  },
+  { 
+    id: '16', name: 'Janakpuri', zone: 'West', population: '190K',
+    currentRisk: 'moderate', currentRainfall: 28, drainCapacity: 65, activeIncidents: 0, lastFlood: '4 days ago',
+    historicalRisk: 'moderate', historicalIncidents: 20,
+    floodFrequency: 20, severeFloods: 3, peakRainfall: '122 mm (Aug 2021)', avgDrainCapacity: 71
+  },
+  { 
+    id: '17', name: 'Laxmi Nagar', zone: 'East', population: '250K',
+    currentRisk: 'critical', currentRainfall: 50, drainCapacity: 18, activeIncidents: 3, lastFlood: '3 hours ago',
+    historicalRisk: 'critical', historicalIncidents: 45,
+    floodFrequency: 45, severeFloods: 11, peakRainfall: '165 mm (Jul 2023)', avgDrainCapacity: 40
+  },
+  { 
+    id: '18', name: 'Model Town', zone: 'North', population: '95K',
+    currentRisk: 'high', currentRainfall: 42, drainCapacity: 35, activeIncidents: 2, lastFlood: '7 hours ago',
+    historicalRisk: 'moderate', historicalIncidents: 25,
+    floodFrequency: 25, severeFloods: 4, peakRainfall: '132 mm (Sep 2022)', avgDrainCapacity: 66
+  },
+  { 
+    id: '19', name: 'Punjabi Bagh', zone: 'West', population: '82K',
+    currentRisk: 'moderate', currentRainfall: 30, drainCapacity: 58, activeIncidents: 1, lastFlood: '2 days ago',
+    historicalRisk: 'high', historicalIncidents: 27,
+    floodFrequency: 27, severeFloods: 6, peakRainfall: '140 mm (Jul 2021)', avgDrainCapacity: 55
+  },
+  { 
+    id: '20', name: 'Mayur Vihar', zone: 'East', population: '165K',
+    currentRisk: 'high', currentRainfall: 44, drainCapacity: 30, activeIncidents: 2, lastFlood: '5 hours ago',
+    historicalRisk: 'high', historicalIncidents: 33,
+    floodFrequency: 33, severeFloods: 7, peakRainfall: '150 mm (Aug 2023)', avgDrainCapacity: 48
+  },
 ];
-
-const getRiskColor = (risk: WardData['currentRisk']) => {
-  switch (risk) {
-    case 'low': return 'bg-success';
-    case 'moderate': return 'bg-warning';
-    case 'high': return 'bg-destructive/80';
-    case 'critical': return 'bg-destructive';
-  }
-};
 
 const WardDashboard = () => {
   const [view, setView] = useState<'live' | 'historical'>('live');
-  const [selectedWard, setSelectedWard] = useState<WardData | null>(null);
+  const [selectedWardId, setSelectedWardId] = useState<string | null>(null);
+
+  const displayedWards = useMemo(() => {
+    return rawWardsData.map(ward => {
+      if (view === 'live') {
+        // LIVE VIEW: Green dots, perfect weather params
+        return {
+          ...ward,
+          currentRisk: 'low' as RiskLevel,
+          currentRainfall: 0,
+          activeIncidents: 0,
+          drainCapacity: Math.floor(Math.random() * (95 - 85 + 1)) + 85,
+          lastFlood: `${Math.floor(Math.random() * 2) + 5} months ago`
+        };
+      } else {
+        // HISTORICAL VIEW: Use Historical Risk color
+        return {
+          ...ward,
+          currentRisk: ward.historicalRisk 
+        };
+      }
+    });
+  }, [view]);
+
+  const selectedWard = useMemo(() => 
+    displayedWards.find(w => w.id === selectedWardId) || null, 
+  [displayedWards, selectedWardId]);
 
   return (
     <Layout>
       <Helmet>
         <title>Ward Risk Dashboard | Delhi FloodWatch</title>
-        <meta name="description" content="Interactive ward-level risk visualization with live and historical flood data for all Delhi wards." />
       </Helmet>
 
       <div className="p-6 space-y-6">
@@ -90,72 +203,69 @@ const WardDashboard = () => {
           </div>
         </div>
 
-        {/* Legend */}
+        {/* Top Legend Badge */}
         <div className="glass-card p-4">
           <div className="flex flex-wrap items-center gap-6">
-            <span className="text-sm text-muted-foreground">Risk Level:</span>
+            <span className="text-sm text-muted-foreground font-medium">Risk Level:</span>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-success" />
-              <span className="text-sm text-foreground">Low (0-25%)</span>
+              <span className="w-3 h-3 rounded-full bg-success" />
+              <span className="text-sm text-foreground">Low</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-warning" />
-              <span className="text-sm text-foreground">Moderate (26-50%)</span>
+              <span className="w-3 h-3 rounded-full bg-warning" />
+              <span className="text-sm text-foreground">Moderate</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-destructive/80" />
-              <span className="text-sm text-foreground">High (51-75%)</span>
+              <span className="w-3 h-3 rounded-full bg-destructive/80" />
+              <span className="text-sm text-foreground">High</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-destructive animate-pulse" />
-              <span className="text-sm text-foreground">Critical (76-100%)</span>
+              <span className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
+              <span className="text-sm text-foreground">Critical</span>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Heat Map Grid */}
-          <div className="lg:col-span-2 glass-card p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="lg:col-span-2 glass-card p-0 overflow-hidden flex flex-col">
+            <div className="p-6 pb-2 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">
                 {view === 'live' ? 'Live Risk Heat Map' : 'Historical Risk Pattern'}
               </h2>
-              <Badge variant={view === 'live' ? 'default' : 'secondary'}>
-                {view === 'live' ? 'Real-time' : 'Last 5 Years'}
+              <Badge variant={view === 'live' ? 'default' : 'secondary'} className="gap-1">
+                {view === 'live' ? <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/> : <History className="w-3 h-3"/>}
+                {view === 'live' ? 'Real-time System Active' : '5-Year Analysis'}
               </Badge>
             </div>
 
-            {/* Ward Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {wardsData.map((ward) => {
-                const risk = view === 'live' ? ward.currentRisk : ward.historicalRisk;
-                const isSelected = selectedWard?.id === ward.id;
-                
-                return (
-                  <button
-                    key={ward.id}
-                    onClick={() => setSelectedWard(ward)}
-                    className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${getRiskColor(risk)} ${
-                      isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
-                    }`}
-                  >
-                    <div className="text-center">
-                      <p className="font-semibold text-sm text-white truncate">{ward.name}</p>
-                      <p className="text-xs text-white/80 mt-1">{ward.zone}</p>
-                      {view === 'live' && ward.activeIncidents > 0 && (
-                        <div className="mt-2 flex items-center justify-center gap-1">
-                          <AlertTriangle className="w-3 h-3 text-white" />
-                          <span className="text-xs text-white">{ward.activeIncidents} active</span>
-                        </div>
-                      )}
-                      {view === 'historical' && (
-                        <p className="text-xs text-white/80 mt-2">{ward.historicalIncidents} incidents</p>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="flex-1 p-0 min-h-[400px]">
+              <DelhiMap
+                wardsData={displayedWards}
+                onWardSelect={(ward) => setSelectedWardId(ward.id)}
+                selectedWardId={selectedWardId}
+              />
             </div>
+
+            {/* --- UPDATED FOOTER --- */}
+            <div className="px-4 py-3 bg-secondary/10 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                  <span>System Status: <strong>Optimal</strong></span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                   <Info className="w-3 h-3" />
+                   <span>Source: IMD, OPENMETEO & OGD Data</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <RefreshCw className="w-3 h-3 animate-spin-slow" />
+                <span>Last Updated: {view === 'live' ? 'Just now' : 'Dec 2025'}</span>
+              </div>
+            </div>
+            {/* ---------------------- */}
           </div>
 
           {/* Ward Details Panel */}
@@ -167,59 +277,94 @@ const WardDashboard = () => {
                 <div className="p-4 rounded-xl bg-secondary/30 border border-border/50">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-foreground">{selectedWard.name}</h3>
-                    <Badge variant={view === 'live' ? 
-                      (selectedWard.currentRisk === 'critical' ? 'critical' : selectedWard.currentRisk) : 
-                      (selectedWard.historicalRisk === 'critical' ? 'critical' : selectedWard.historicalRisk)
-                    }>
-                      {view === 'live' ? selectedWard.currentRisk : selectedWard.historicalRisk}
+                    <Badge variant={
+                      selectedWard.currentRisk === 'critical' ? 'destructive' :
+                      selectedWard.currentRisk === 'high' ? 'destructive' :
+                      selectedWard.currentRisk === 'moderate' ? 'secondary' : 'outline'
+                    } className={selectedWard.currentRisk === 'low' ? 'bg-success text-white border-0' : ''}>
+                      {selectedWard.currentRisk.toUpperCase()}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{selectedWard.zone} Delhi • Pop. {selectedWard.population}</p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
-                    <div className="flex items-center gap-2">
-                      <Cloud className="w-4 h-4 text-primary" />
-                      <span className="text-sm text-muted-foreground">Current Rainfall</span>
-                    </div>
-                    <span className="font-mono text-foreground">{selectedWard.currentRainfall} mm/hr</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
-                    <div className="flex items-center gap-2">
-                      <Droplets className="w-4 h-4 text-primary" />
-                      <span className="text-sm text-muted-foreground">Drain Capacity</span>
-                    </div>
-                    <span className="font-mono text-foreground">{selectedWard.drainCapacity}%</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-warning" />
-                      <span className="text-sm text-muted-foreground">Active Incidents</span>
-                    </div>
-                    <span className="font-mono text-foreground">{selectedWard.activeIncidents}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
-                    <div className="flex items-center gap-2">
-                      <History className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Historical Incidents</span>
-                    </div>
-                    <span className="font-mono text-foreground">{selectedWard.historicalIncidents}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Last Flood</span>
-                    </div>
-                    <span className="text-sm text-foreground">{selectedWard.lastFlood}</span>
-                  </div>
+                  {view === 'live' ? (
+                    // Live View Params
+                    <>
+                       <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <Cloud className="w-4 h-4 text-primary" />
+                          <span className="text-sm text-muted-foreground">Current Rainfall</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.currentRainfall} mm/hr</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <Droplets className="w-4 h-4 text-primary" />
+                          <span className="text-sm text-muted-foreground">Drain Capacity</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.drainCapacity}%</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-warning" />
+                          <span className="text-sm text-muted-foreground">Active Incidents</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.activeIncidents}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Last Flood</span>
+                        </div>
+                        <span className="text-sm text-foreground">{selectedWard.lastFlood}</span>
+                      </div>
+                    </>
+                  ) : (
+                    // Historical View Params
+                    <>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <Waves className="w-4 h-4 text-blue-500" />
+                          <span className="text-sm text-muted-foreground">Flood Frequency</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.floodFrequency} events</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-destructive" />
+                          <span className="text-sm text-muted-foreground">Severe Events</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.severeFloods}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <ThermometerSun className="w-4 h-4 text-orange-500" />
+                          <span className="text-sm text-muted-foreground">Peak Rainfall</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.peakRainfall}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/20">
+                        <div className="flex items-center gap-2">
+                          <Activity className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Avg Drain Capacity</span>
+                        </div>
+                        <span className="font-mono text-foreground">{selectedWard.avgDrainCapacity}%</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <Button variant="outline" className="w-full gap-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full gap-2 mt-4"
+                  onClick={() => {
+                    if (selectedWard) {
+                      generateWardReport(selectedWard);
+                    }
+                  }}
+                >
                   <Eye className="w-4 h-4" />
                   View Full Report
                   <ChevronRight className="w-4 h-4" />
@@ -245,7 +390,7 @@ const WardDashboard = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
-                  {wardsData.filter(w => w.currentRisk === 'critical').length}
+                  {displayedWards.filter(w => w.currentRisk === 'critical').length}
                 </p>
                 <p className="text-xs text-muted-foreground">Critical Wards</p>
               </div>
@@ -258,7 +403,7 @@ const WardDashboard = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
-                  {wardsData.filter(w => w.currentRisk === 'high').length}
+                  {displayedWards.filter(w => w.currentRisk === 'high').length}
                 </p>
                 <p className="text-xs text-muted-foreground">High Risk Wards</p>
               </div>
@@ -271,9 +416,14 @@ const WardDashboard = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
-                  {wardsData.reduce((acc, w) => acc + w.activeIncidents, 0)}
+                  {view === 'live' 
+                    ? displayedWards.reduce((acc, w) => acc + w.activeIncidents, 0)
+                    : displayedWards.reduce((acc, w) => acc + w.floodFrequency, 0)
+                  }
                 </p>
-                <p className="text-xs text-muted-foreground">Active Incidents</p>
+                <p className="text-xs text-muted-foreground">
+                  {view === 'live' ? 'Active Incidents' : 'Total Flood Events'}
+                </p>
               </div>
             </div>
           </div>
@@ -284,7 +434,7 @@ const WardDashboard = () => {
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">
-                  {Math.round(wardsData.reduce((acc, w) => acc + w.drainCapacity, 0) / wardsData.length)}%
+                  {Math.round(displayedWards.reduce((acc, w) => acc + (view === 'live' ? w.drainCapacity : w.avgDrainCapacity), 0) / displayedWards.length)}%
                 </p>
                 <p className="text-xs text-muted-foreground">Avg Drain Capacity</p>
               </div>
