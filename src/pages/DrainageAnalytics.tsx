@@ -95,10 +95,6 @@ const DrainageAnalytics = () => {
             <h1 className="text-2xl font-bold text-foreground">Drainage Infrastructure Analytics</h1>
             <p className="text-muted-foreground">Ward-wise health scores and bottleneck analysis</p>
           </div>
-          <Button variant="outline" className="gap-2">
-            <Wrench className="w-4 h-4" />
-            Maintenance Schedule
-          </Button>
         </div>
 
         {/* Summary Stats */}

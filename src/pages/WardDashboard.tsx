@@ -206,25 +206,36 @@ const WardDashboard = () => {
         {/* Top Legend Badge */}
         <div className="glass-card p-4">
           <div className="flex flex-wrap items-center gap-6">
-            <span className="text-sm text-muted-foreground font-medium">Risk Level:</span>
+            <span className="text-sm text-muted-foreground font-medium">
+              Risk Level:
+            </span>
+
+            {/* Low */}
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-success" />
+              <span className="w-3 h-3 rounded-full bg-green-500" />
               <span className="text-sm text-foreground">Low</span>
             </div>
+
+            {/* Moderate */}
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-warning" />
+              <span className="w-3 h-3 rounded-full bg-yellow-400" />
               <span className="text-sm text-foreground">Moderate</span>
             </div>
+
+            {/* High */}
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-destructive/80" />
+              <span className="w-3 h-3 rounded-full bg-orange-500" />
               <span className="text-sm text-foreground">High</span>
             </div>
+
+            {/* Critical */}
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-destructive animate-pulse" />
+              <span className="w-3 h-3 rounded-full bg-red-600 animate-pulse" />
               <span className="text-sm text-foreground">Critical</span>
             </div>
           </div>
         </div>
+
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Heat Map Grid */}
