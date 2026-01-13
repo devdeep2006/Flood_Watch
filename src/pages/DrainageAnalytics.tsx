@@ -50,6 +50,7 @@ const drainageData: WardDrainage[] = [
   { id: '268', name: 'Welcome Colony', zone: 'Shahdara (East)', healthScore: 34, designedCapacity: 1050, actualLoad: 1520, drainDensity: 2.5, majorOutlets: 5, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 7, maintenanceNeeded: true },
 ];
 
+
 const getHealthColor = (score: number) => {
   if (score >= 70) return 'bg-success';
   if (score >= 50) return 'bg-warning';
