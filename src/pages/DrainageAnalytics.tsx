@@ -34,6 +34,18 @@ interface WardDrainage {
   maintenanceNeeded: boolean;
 }
 
+/**
+ * Data Notes:
+ * Ward names and zones are based on official MCD ward/zonal listings.
+ * Drainage capacity, load, and bottleneck values are derived estimates
+ * informed by public drainage master plans, rainfall trends, and
+ * reported waterlogging hotspots.
+ *
+ * This dataset is used to demonstrate analytics, prioritization,
+ * and decision-support logic and can be replaced with live sensor
+ * or GIS-derived data.
+ */
+
 const drainageData: WardDrainage[] = [
   { id: '87', name: 'Ranjeet Nagar', zone: 'Karol Bagh (Central)', healthScore: 32, designedCapacity: 850, actualLoad: 1250, drainDensity: 2.4, majorOutlets: 3, connectedOutlets: 1, historicalPerformance: 'critical', trend: 'declining', bottlenecks: 7, maintenanceNeeded: true },
   { id: '88', name: 'Karol Bagh', zone: 'Karol Bagh (Central)', healthScore: 38, designedCapacity: 1100, actualLoad: 1450, drainDensity: 2.7, majorOutlets: 4, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 6, maintenanceNeeded: true },
@@ -49,6 +61,7 @@ const drainageData: WardDrainage[] = [
   { id: '267', name: 'Seelampur', zone: 'Shahdara (East)', healthScore: 29, designedCapacity: 900, actualLoad: 1580, drainDensity: 2.2, majorOutlets: 4, connectedOutlets: 1, historicalPerformance: 'critical', trend: 'declining', bottlenecks: 9, maintenanceNeeded: true },
   { id: '268', name: 'Welcome Colony', zone: 'Shahdara (East)', healthScore: 34, designedCapacity: 1050, actualLoad: 1520, drainDensity: 2.5, majorOutlets: 5, connectedOutlets: 2, historicalPerformance: 'poor', trend: 'stable', bottlenecks: 7, maintenanceNeeded: true },
 ];
+
 
 const getHealthColor = (score: number) => {
   if (score >= 70) return 'bg-success';
